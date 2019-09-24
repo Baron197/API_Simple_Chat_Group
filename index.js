@@ -15,25 +15,16 @@ const io = socketIO(server)
 var arrMsg = []
 var userCount = 0
 
+app.io = io
+app.arrMsg = arrMsg
+
 app.get('/', (req,res) => {
     res.status(200).send('<h1>Selamat datang di API Socket.IO</h1>')
 })
 
-app.get('/getmessages', (req,res) => {
-    res.status(200).send(arrMsg)
-})
+const { chatRouter } = require('./routers')
 
-app.post('/sendmessage',(req,res) => {
-    arrMsg.push(req.body)
-    io.emit('chat message', arrMsg)
-    res.status(200).send({ message: 'Send Message Success'})
-})
-
-app.delete('/clearmessages', (req,res) => {
-    arrMsg = []
-    io.emit('chat message', arrMsg)
-    res.status(200).send({ message: 'Clear Messages Success'})
-})
+app.use('/chat', chatRouter)
 
 io.on('connection', socket => {
   console.log('User connected')
